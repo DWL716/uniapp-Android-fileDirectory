@@ -56,6 +56,8 @@ function onFileSelected(item) {
 }
 
 // 核心功能 通过 File 类来获取当前目录列表
+// 测试安卓版本 8.x 、小米11 安卓12
+// 获取手机根目录无法通过 plus.io.resolveLocalFileSystemURL 获取，会报错 https://ask.dcloud.net.cn/article/36199
 function getPrivateDir(dirPath: string) {
 	uni.showLoading({
 		title: '加载中'

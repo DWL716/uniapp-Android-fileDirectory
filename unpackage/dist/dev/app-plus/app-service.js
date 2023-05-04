@@ -49,7 +49,7 @@ if (uni.restoreGlobal) {
           vue.createElementVNode("button", {
             class: "item-2 item",
             type: "primary"
-          }, "获取 Android/data 目录")
+          }, "获取微信Download目录")
         ]);
       };
     }
@@ -124,7 +124,7 @@ if (uni.restoreGlobal) {
         });
         let dir = new File(dirPath);
         if (!dir.exists())
-          return formatAppLog("log", "at pages/root-filelist/root-filelist.vue:68", "目录不存在");
+          return formatAppLog("log", "at pages/root-filelist/root-filelist.vue:70", "目录不存在");
         var files = dir.listFiles();
         if (files == null)
           return uni.hideLoading();
