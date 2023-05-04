@@ -6,7 +6,16 @@
 				"navigationBarTitleText": "uni-app"
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/root-filelist/root-filelist",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "手机目录",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
