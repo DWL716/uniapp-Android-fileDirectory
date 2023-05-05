@@ -15,6 +15,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/weixin-filelist/weixin-filelist",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "微信文件列表",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

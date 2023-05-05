@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<button @click="openRootFileDir" class="item-1 item" type="primary">获取手机目录</button>
-		<button class="item-2 item" type="primary">获取微信Download目录</button>
+		<button @click="openWeixinFileDir" class="item-2 item" type="primary">获取微信Download目录</button>
 	</view>
 </template>
 
@@ -10,6 +10,12 @@
 	const openRootFileDir = () => {
 		uni.navigateTo({
 			url: '/pages/root-filelist/root-filelist'
+		})
+	}
+	
+	const openWeixinFileDir = () => {
+		uni.navigateTo({
+			url: '/pages/weixin-filelist/weixin-filelist'
 		})
 	}
 </script>
