@@ -12,7 +12,7 @@ log.txt
 *.sublime-project
 *.sublime-workspace
 
-.vite
+.vite/
 .stencil/
 .idea/
 .hbuilderx/
@@ -22,7 +22,7 @@ log.txt
 node_modules/
 uni_modules/
 $RECYCLE.BIN/
-unpackage
+unpackage/
 
 .DS_Store
 Thumbs.db

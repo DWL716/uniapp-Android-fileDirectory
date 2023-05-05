@@ -10,14 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import pdf from '../../static/icon_pdf.png';
 import word from '../../static/icon_word.png';
 
 let main = plus.android.runtimeMainActivity();
 
 const fileList = ref<any[]>([]);
-const stack = ref<string[]>([]);
 
 function fileType(type: string) {
 	return /.docx$/.test(type) ? word : pdf;
@@ -28,27 +27,6 @@ function onFileSelected(item) {
 	// 将文件复制到公共目录
 	copyFileByUri(item);
 }
-
-const onUpload = files => {
-	console.log('=====file.value====', files);
-	uni.uploadFile({
-		url: 'http://192.168.6.240:8080/file',
-		filePath: files,
-		name: 'file', //后台接收字段名
-		success: res => {
-			console.log('请求成功_______________', res);
-			if (res.status === 200) {
-				uni.navigateBack();
-			}
-		},
-		fail: err => {
-			console.log('请求失败_______________', err);
-		},
-		complete: () => {
-			console.log('结束了----');
-		}
-	});
-};
 
 function getData(data) {
 	let date = new Date(data);
@@ -74,61 +52,12 @@ function pathToUri(path, Uri) {
 	);
 }
 
-function copyTet(pathUri) {
-	console.log('pathUri', pathUri);
-	let pathUrl = '/log.txt'; //指定文件路径
-	let environment = plus.android.importClass('android.os.Environment');
-	var sdRoot = environment.getExternalStorageDirectory(); //文件夹根目录
-	var File = plus.android.importClass('java.io.File');
-	var BufferedReader = plus.android.importClass('java.io.BufferedReader');
-	var FileReader = plus.android.importClass('java.io.FileReader');
-	var FileWriter = plus.android.importClass('java.io.FileWriter');
-	var FileInputStream = plus.android.importClass('java.io.FileInputStream');
-	var FileOutputStream = plus.android.importClass('java.io.FileOutputStream');
-
-	let contentResolver = main.getContentResolver();
-	plus.android.importClass(contentResolver);
-
-	// /storage/emulated/0/Android/data/com.tencent.mm/MicroMsg/Download/iim.txt
-	// '/Android/data/com.tencent.mm/MicroMsg/Download/iim.txt'
-	console.log('sdRoot', sdRoot);
-	let readFr = new File(sdRoot + pathUrl);
-	let txt = '';
-	try {
-		var reader = new BufferedReader(new FileReader(readFr));
-		console.log('reader', reader);
-		// 我的需求是读取多行,所以把每行都读出来存在数组里
-		let arr = [];
-		let txt;
-		while ((txt = reader.readLine()) != null) {
-			console.log('txt', txt);
-			arr.push(txt);
-		}
-		// 传入回调处理你的业务
-		console.log('arr', arr);
-		//处理业务逻辑
-	} catch (e) {
-		console.log('eeee', e);
-	}
-}
-
+// 将 Android/data 目录下的文件拷贝到公共目录下
 function copyFileByUri(item) {
-	// const Uri = plus.android.importClass('android.net.Uri');
-	// var String = plus.android.importClass('java.lang.String');
-	// var byteClass = plus.android.importClass('java.type');
-	// let Environment = plus.android.importClass('android.os.Environment');
-	// const DocumentFile = plus.android.importClass('androidx.documentfile:documentfile:1.0.1');
 	plus.android.importClass('java.io.FileInputStream');
-	// var File = plus.android.importClass('java.io.File');
-	var FileReader = plus.android.importClass('java.io.FileReader');
-	var FileWriter = plus.android.importClass('java.io.FileWriter');
-	var BufferedReader = plus.android.importClass('java.io.BufferedReader');
-	var FileOutputStream = plus.android.importClass('java.io.FileOutputStream');
-	var InputStreamReader = plus.android.importClass('java.io.InputStreamReader');
-	var Channels = plus.android.importClass('java.nio.channels.Channels');
-
-	let FileChannel = plus.android.importClass('java.nio.channels.FileChannel');
-
+	let FileOutputStream = plus.android.importClass('java.io.FileOutputStream');
+	
+	// 导入 Android 原生类 ContentResolver
 	let contentResolver = main.getContentResolver();
 	plus.android.importClass(contentResolver);
 
@@ -137,22 +66,12 @@ function copyFileByUri(item) {
 	try {
 		inputStream = contentResolver.openInputStream(item.pathUri.getUri());
 
-		console.log('size====', inputStream.available());
 		fileOutputStream = new FileOutputStream('/storage/emulated/0/Download/' + item.name);
 
 		let byteRead = 0;
-		// while ((byteRead = inputStream.read()) != -1 && byteRead != null) {
-		// 	fileOutputStream.write(byteRead);
-		// }
-		let buf = new Int8Array(497);
-		let str = 0;
-		// while ((str = inputStream.read(buf)) != -1 && str != null) {
-		// 	fileOutputStream.write(buf);
-		// }
-		// fileOutputStream.write(inputStream);
-		console.log('FileCopyUtil', new FileChannel().FileCopyUtil);
-		FileChannel.copy(inputStream, fileOutputStream);
-		// let string = new String(buffer, 0, 1024, 'UTF-8');
+		while ((byteRead = inputStream.read()) != -1 && byteRead != null) {
+			fileOutputStream.write(byteRead);
+		}
 		inputStream.close();
 		fileOutputStream.flush();
 		fileOutputStream.close();
@@ -160,18 +79,16 @@ function copyFileByUri(item) {
 	} catch (e) {
 		//TODO handle the exception
 		console.log('错误', e);
-		// e.printStackTrace();
 	}
 }
-// 目前还无法读取文件内容
+
+// 获取微信 Download 目录下文件列表
 function weixinPathList() {
 	const weixinPath = '/storage/emulated/0/Android/data/com.tencent.mm/MicroMsg/Download';
 	const Uri = plus.android.importClass('android.net.Uri');
 	const DocumentFile = plus.android.importClass('androidx.documentfile.provider.DocumentFile');
-	var File = plus.android.importClass('java.io.File');
 
 	const documentFile = DocumentFile.fromTreeUri(main, pathToUri(weixinPath, Uri));
-	// let documentFile = DocumentFile.fromSingleUri(main,Uri);
 
 	console.log('documentFile--', documentFile.isDirectory(), documentFile.listFiles(), documentFile.getName());
 	if (documentFile.isDirectory()) {
@@ -185,7 +102,6 @@ function weixinPathList() {
 				break;
 			}
 		}
-		// console.log('documentFile2', documentFile2.listFiles());
 		let documentFile3 = null;
 		for (let listFile of documentFile2.listFiles()) {
 			if (listFile.getName() == 'MicroMsg') {
@@ -194,7 +110,6 @@ function weixinPathList() {
 			}
 		}
 
-		// console.log('documentFile3', documentFile3.listFiles());
 		let documentFile4 = null;
 		for (let listFile of documentFile3.listFiles()) {
 			if (listFile.getName() == 'Download') {
@@ -202,7 +117,6 @@ function weixinPathList() {
 				break;
 			}
 		}
-		// console.log('documentFile4', documentFile4.listFiles());
 
 		for (let item of documentFile4.listFiles()) {
 			if (item.isDirectory()) continue;
@@ -222,7 +136,6 @@ function weixinPathList() {
 			json.time = item.lastModified();
 			json.pathUri = item;
 			fileList.value.push(json);
-			// console.log(item.getName(),item.length(), item.getUri(), item.lastModified());
 		}
 	}
 }
@@ -270,9 +183,6 @@ function getPrivateDir(dirPath: string) {
 					let filePath = file.getAbsolutePath();
 
 					if (/^\./.test(fileName)) continue;
-					// console.log('文件名: ' + fileName);
-					// console.log('文件路径: ' + filePath);
-					// console.log("文件大小: " + fileSize + " 字节");
 
 					json.type = 'file';
 					json.name = fileName;
@@ -289,29 +199,30 @@ function getPrivateDir(dirPath: string) {
 }
 
 onMounted(() => {
-	weixinPathList();
+	let systemInfo = JSON.parse(uni.getStorageSync('systemInfo') || {});
+	if (systemInfo.osAndroidAPILevel <= 29) {
+		getPrivateDir('/storage/emulated/0/Android/data/com.tencent.mm/MicroMsg/Download');
+	} else {
+		weixinPathList();
+	}
 });
 </script>
 
 <style lang="scss" scoped>
 .file-item {
-	// flex py-2 items-center border-0 border-b border-solid border-[#e7e7e7]
 	display: flex;
 	padding: 20rpx;
 	align-items: center;
 	border-bottom: 1px solid #e7e7e7;
 	.icon {
-		// w-[50px] ml-2
 		width: 50rpx;
 		margin-left: 20rpx;
 	}
 	.item-content {
-		// flex flex-col pl-3
 		display: flex;
 		flex-direction: column;
 		padding-left: 26rpx;
 		.item-content-text {
-			// my-[6px]
 			margin: 12rpx;
 		}
 	}

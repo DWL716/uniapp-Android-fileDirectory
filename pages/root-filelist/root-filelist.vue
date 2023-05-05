@@ -94,7 +94,6 @@ function getPrivateDir(dirPath: string) {
 			json.type = 'dir';
 			json.path = dirPath;
 			json.name = dirName;
-			// fileList.value.push(json);
 			lists.push(json);
 		} else {
 			// 处理文件
@@ -109,7 +108,6 @@ function getPrivateDir(dirPath: string) {
 			json.size = fileSize;
 			json.path = filePath;
 			json.time = file.lastModified();
-			// fileList.value.push(json);
 			lists.push(json);
 		}
 	}
