@@ -6,7 +6,9 @@
 </template>
 
 <script lang="ts" setup>
-	let main = plus.android.runtimeMainActivity();
+	// #ifdef APP-PLUS
+	const main = plus.android.runtimeMainActivity();
+	// #endif
 	
 	const openRootFileDir = () => {
 		uni.navigateTo({

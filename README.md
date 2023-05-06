@@ -1,7 +1,12 @@
 ### 安卓手机目录
+![图片](/static/home.png)
 #### 1、获取安卓手机根目录
-	安卓手机根目录通过 5+ api 的 plus.io.resolveLocalFileSystemURL 获取
-	会报错 https://ask.dcloud.net.cn/article/36199
+ 有三种方法
+ 1. 通过plus.io.resolveLocalFileSystemURL
+ 2. 通过java.io.File 类
+ 3. 打开系统文件管理器
+ 注：
+  如果安卓targetSdkVersion>=29 时通过plus.io.resolveLocalFileSystemURL 获取根目录会报错 https://ask.dcloud.net.cn/article/36199
 	所以只能通过安卓原生模块 File 来获取当前手机目录列表
 	```
 	// 具体看 root-fileList.vue 文件
@@ -19,3 +24,7 @@
 	let files = dir.listFiles();
 	
 	```
+
+
+推荐
+https://ext.dcloud.net.cn/plugin?id=7983#detail
