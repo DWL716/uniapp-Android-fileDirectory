@@ -2,11 +2,14 @@
 	<view class="content">
 		<button @click="openRootFileDir" class="item-1 item" type="primary">获取手机目录</button>
 		<button @click="openHTMLRootFileDir" class="item-1 item" type="primary">5+获取手机目录</button>
+		<button @click="openSystemFileManager" class="item-1 item" type="primary">打开系统文件管理器</button>
 		<button @click="openWeixinFileDir" class="item-2 item" type="primary">获取微信Download目录</button>
 	</view>
 </template>
 
 <script lang="ts" setup>
+	import {systemFileManager} from '../../utils/comm'
+	
 	// #ifdef APP-PLUS
 	const main = plus.android.runtimeMainActivity();
 	// #endif
@@ -15,6 +18,12 @@
 		uni.navigateTo({
 			url: '/pages/root-filelist/root-filelist'
 		})
+	}
+	
+	const openSystemFileManager = () => {
+		// #ifdef APP-PLUS
+		systemFileManager()
+		// #endif
 	}
 	
 	const openHTMLRootFileDir = () => {
