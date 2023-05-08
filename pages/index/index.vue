@@ -1,6 +1,7 @@
 <template>
 	<view class="content">
 		<button @click="openRootFileDir" class="item-1 item" type="primary">获取手机目录</button>
+		<button @click="openHTMLRootFileDir" class="item-1 item" type="primary">5+获取手机目录</button>
 		<button @click="openWeixinFileDir" class="item-2 item" type="primary">获取微信Download目录</button>
 	</view>
 </template>
@@ -13,6 +14,12 @@
 	const openRootFileDir = () => {
 		uni.navigateTo({
 			url: '/pages/root-filelist/root-filelist'
+		})
+	}
+	
+	const openHTMLRootFileDir = () => {
+		uni.navigateTo({
+			url: '/pages/root-filelist/root-fileList-Html5'
 		})
 	}
 	

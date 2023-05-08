@@ -24,6 +24,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/root-filelist/root-fileList-Html5",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "5+获取目录",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
