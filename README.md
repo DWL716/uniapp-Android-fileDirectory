@@ -1,12 +1,13 @@
 ### 安卓手机目录
 ![图片](/static/preview.png)
+我也是第一次使用uniapp开发移动端App，开始研究文件列表和微信文件列表也是很闷逼，那时候也根本不懂5+规范和原生安卓类，自己也查了很多资料、使用GPT3.5熟悉安卓的api。说实话GPT3.5只能是辅助，让他帮你写代码实在是为难了。
 #### 1、获取安卓手机根目录
  有三种方法
  1. 通过plus.io.resolveLocalFileSystemURL
  2. 通过java.io.File 类
  3. 打开系统文件管理器
  注：
-  如果安卓targetSdkVersion>=29 时通过plus.io.resolveLocalFileSystemURL 获取根目录会报错 https://ask.dcloud.net.cn/article/36199
+  如果安卓targetSdkVersion>=29 时通过 plus.io.resolveLocalFileSystemURL 获取根目录会报错 https://ask.dcloud.net.cn/article/36199
 	所以只能通过安卓原生模块 File 来获取当前手机目录列表
 	```
 	// 具体看 root-fileList.vue 文件
