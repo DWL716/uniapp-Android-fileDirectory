@@ -3,16 +3,6 @@ export function systemFileManager() {
 	let main = plus.android.runtimeMainActivity();
 	let Intent = plus.android.importClass('android.content.Intent');
 
-	// #ifdef APP-PLUS
-	if (plus.os.name.toLowerCase() != 'android') {
-		uni.showModal({
-			title: '提示',
-			content: '仅支持Android平台',
-			success: function(res) {}
-		});
-		return false;
-	}
-
 	let fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
 	//fileIntent.setType(“image/*”);//选择图片
 	//fileIntent.setType(“audio/*”); //选择音频
@@ -31,75 +21,33 @@ export function systemFileManager() {
 		let Environment = plus.android.importClass('android.os.Environment');
 		let DocumentsContract = plus.android.importClass('android.provider.DocumentsContract');
 		let MediaStore = plus.android.importClass('android.provider.MediaStore');
-
-		var BufferedReader = plus.android.importClass('java.io.BufferedReader');
-		var FileReader = plus.android.importClass('java.io.FileReader');
-		var InputStreamReader = plus.android.importClass('java.io.InputStreamReader');
-		var FileOutputStream = plus.android.importClass('java.io.FileOutputStream');
 		var File = plus.android.importClass('java.io.File');
-
-		plus.android.importClass('java.io.FileInputStream');
 
 		// 给系统导入 contentResolver
 		let contentResolver = main.getContentResolver();
 		plus.android.importClass(contentResolver);
 		// 返回路径
 		let path = '';
+		console.log('resultCode', resultCode);
 		if (resultCode == Activity.RESULT_OK) {
 			let uri = data.getData();
 			let src = uri.getPath();
 			let source = new File(src);
+			// 获取文件相关信息
 			console.log(data, uri, src, source.toString());
-			
-			// 这里是文件复制
-			/**
-			try {
-				// let  reader = new BufferedReader(new FileReader(InputStream));
-				let sourceUri = Uri.fromFile(new File(uri));
-				let InputStream = contentResolver.openInputStream(uri);
-				console.log('len==1', InputStream.available());
-			
-				//
-				let file = new File('/storage/emulated/0/aaabbb.txt');
-			
-				let fileOutputStream = new FileOutputStream(file);
-			
-				let len = 0;
-				let sum = 0;
-				while ((len = InputStream.read()) != -1) {
-					// fos.write(buf, 0, len);
-					fileOutputStream.write(len);
-					sum += len;
-				}
-				//
-			
-				let arr = [];
-				let txt;
-			
-				// while ((txt = reader.readLine()) != null) {
-				// 	console.log('txt', txt);
-				//     arr.push(txt)
-				// }
-				InputStream.close();
-				fileOutputStream.flush();
-				fileOutputStream.close();
-			
-				console.log('ccccc', arr);
-			} catch (e) {
-				//TODO handle the exception
-				console.log('eeee', e);
-			} 
-			 */
 
 			if ('file' == uri.getScheme().toLowerCase()) {
+				console.log(1);
 				//使用第三方应用打开
 				path = uri.getPath();
 				return;
 			}
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+				console.log(2);
 				//4.4以后
 				path = getPath(this, uri);
 			} else {
+				console.log(3);
 				//4.4以下下系统调用方法
 				path = getRealPathFromURI(uri);
 			}
@@ -137,6 +85,7 @@ export function systemFileManager() {
 					let split = docId.split(':');
 					let type = split[0];
 					let contentUri = null;
+					console.log(444, type.toLowerCase());
 					if ('image' == type.toLowerCase()) {
 						contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 					} else if ('video' == type.toLowerCase()) {
@@ -196,4 +145,75 @@ export function systemFileManager() {
 			return 'com.android.providers.media.documents' == uri.getAuthority() ? true : false;
 		}
 	};
+}
+
+// 选择目录列表
+export function selectCatalog(isPrv) {
+	/* 参考资料
+		https://sky233.ml/android11-data/
+		https://juejin.cn/post/7029511724424232997#comment
+	*/
+	// 请求存储权限指令，用于权限返回判断
+	var REQUESTCODE = 11;
+
+	// 引入相关类
+	const Intent = plus.android.importClass('android.content.Intent');
+	const Uri = plus.android.importClass('android.net.Uri');
+	const DocumentsContract = plus.android.importClass('android.provider.DocumentsContract');
+	const DocumentFile = plus.android.importClass('androidx.documentfile.provider.DocumentFile');
+	let main = plus.android.runtimeMainActivity();
+	// 创建 Uri 对象
+	const uri = Uri.parse('content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata');
+
+	// 创建 DocumentFile 对象
+	// const documentFile = plus.android.invoke('android.documentfile.provider.DocumentFile', 'fromTreeUri', main, uri);
+	// const documentFile = DocumentFile.fromTreeUri(main, uri)
+	const documentFile = DocumentFile.fromTreeUri(main, uri);
+
+	// 创建 Intent 对象
+	const intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+	/*
+	intent.setFlags() 方法是用于设置 Intent 对象的标志位的方法
+	Intent 是 Android 中的一个类，用于表示应用之间的通信和交互。
+	 在使用 Intent 进行跨应用通信时，需要设置相应的标志位来授予对应的权限。
+				 
+	 Intent.FLAG_GRANT_READ_URI_PERMISSION 和 Intent.FLAG_GRANT_WRITE_URI_PERMISSION 标志用于授予读写 URI 的权限，
+	 Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION 标志用于授予持久化的 URI 权限，Intent.FLAG_GRANT_PREFIX_URI_PERMISSION 标志用于授予 URI 前缀匹配的权限
+	*/
+	intent.setFlags(
+		Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+	);
+
+	// 设置初始 Uri
+	if (documentFile != null) {
+		// 将指定的 URI 作为初始 URI 添加到 Intent 中
+		// documentFile 是一个 DocumentFile 对象，用于表示要访问的文件或目录
+		// getUri() 方法用于获取该文件或目录的 URI
+		intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, documentFile.getUri());
+	}
+
+	// 权限确认后调用该方法
+	main.onActivityResult = function(requestCode, resultCode, data) {
+		console.log('ccccc', requestCode, resultCode, data, data.getData());
+		if (requestCode === REQUESTCODE) {
+			//本地存一下，用于判断是否已有访问权限
+			isPrv.value = true;
+
+			// 保存权限
+			try {
+				// 给系统导入 contentResolver
+				let contentResolver = main.getContentResolver();
+				plus.android.importClass(contentResolver);
+
+				contentResolver.takePersistableUriPermission(data.getData(), data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
+			} catch (e) {
+				//TODO handle the exception
+				console.warn('c错误', e);
+			}
+		}
+	};
+
+	// 用于启动一个 Activity (是一个表示用户界面的组件，用于与用户进行交互) 并等待其返回结果
+	// intent 用于标识该请求的唯一性
+	main.startActivityForResult(intent, REQUESTCODE);
 }

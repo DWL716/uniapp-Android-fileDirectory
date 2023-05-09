@@ -1,5 +1,5 @@
 ### 安卓手机目录
-![图片](/static/home.png)
+![图片](/static/preview.png)
 #### 1、获取安卓手机根目录
  有三种方法
  1. 通过plus.io.resolveLocalFileSystemURL
@@ -25,6 +25,10 @@
 	
 	```
 
+### 2.获取 Android/data 目录
+1.如果 targetSdkVersion>=29（安卓10+）会有权限问题，所以如果是低版本安卓可以直接用上面方法直接获取，如果高版本需要先获取Android/data目录权限，然后再进行安卓原生类来获取授权文件目录
+
+注：必须获取Android/data 目录的权限，如果不是该目录到时候访问会出错
 
 推荐
 https://ext.dcloud.net.cn/plugin?id=7983#detail
